@@ -1,0 +1,4 @@
+interface:
+  display_name: "文章发布前终检"
+  short_description: "完成 AI proofreading、飞书格式优化与排版交付检查"
+  default_prompt: "Use $finalize-article-for-layout to run the final proofreading and Feishu formatting handoff for this article."
