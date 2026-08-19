@@ -1,6 +1,6 @@
 ---
 name: finalize-article-for-layout
-description: "Apply a fail-closed pre-layout quality gate to a final Chinese article. Use when an author wants to run a finished draft through proofreading before WeChat layout or Word export: fix safe typos, official-name casing, Chinese punctuation, Chinese-English spacing, AI-style em dashes, and excessive bold; inspect heading and list depth without restructuring; automatically replace embedded Feishu sheets with complete native document tables; collect special layout notes; and decide whether the article is ready to @ the typesetter."
+description: "Proofread and normalize the format of a final Chinese article before WeChat layout or Word export. Use it to fix safe typos, official-name casing, Chinese punctuation, Chinese-English spacing, AI-style em dashes, and excessive bold; inspect heading and list depth without restructuring; automatically replace embedded Feishu sheets with complete native document tables; and decide whether the document passes the formatting gate."
 ---
 
 # Finalize Article For Layout
@@ -69,18 +69,7 @@ Inspect every tabular block in the source Feishu document.
 
 Never claim a table passed when the original embedded block, its complete source range, and the resulting native table were not all inspected.
 
-## 4. Collect layout handoff notes
-
-List any non-default requirement the typesetter needs before starting, including:
-
-- no introduction;
-- hand-drawn figures that need the 海外独角兽 template;
-- special image, table, or layout treatment;
-- a non-default publication time.
-
-Do not invent requirements. Write `无` when the author confirms there are none.
-
-## 5. Apply the fail-closed handoff gate
+## 4. Apply the fail-closed formatting gate
 
 Mark `可以 @排版` only when all of the following are true:
 
@@ -91,12 +80,11 @@ Mark `可以 @排版` only when all of the following are true:
 - heading depth is at most three levels;
 - bullet and ordered lists are flat;
 - every table is either a verified native Feishu table or intentionally excluded by the author;
-- special layout requirements are recorded;
 - the draft is final enough that no structural or piecemeal typo edits are expected after layout begins.
 
 If any item is unresolved, use `暂不建议 @排版`. Do not soften a blocking issue into a generic reminder.
 
-## 6. Return the fixed output contract
+## 5. Return the fixed output contract
 
 Always return these sections:
 
@@ -104,7 +92,6 @@ Always return these sections:
 2. `已自动修正` — concise list or `无`; include counts only when they can be determined reliably.
 3. `作者需处理` — each location, problem, rule, and action; write `无` only when empty.
 4. `飞书表格` — number found, number converted, dimension and cell comparison, source-block removal, and Word-export status.
-5. `排版备注` — confirmed special requirements or `无`.
-6. `修正后全文` — include only when the input was pasted text or the user asks for a clean copy.
+5. `修正后全文` — include only when the input was pasted text or the user asks for a clean copy.
 
 For a standalone prompt that authors can paste into another AI, read and return [references/author-prompt.md](references/author-prompt.md).

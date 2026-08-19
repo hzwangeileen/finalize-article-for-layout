@@ -1,4 +1,4 @@
 interface:
-  display_name: "文章发布前质量门"
-  short_description: "完成文字终检、结构审查并自动转换飞书嵌入式表格"
-  default_prompt: "Use $finalize-article-for-layout 对这篇飞书定稿执行发布前质量门，自动修正机械问题，并把嵌入式表格转换为完整的飞书原生表格。"
+  display_name: "文章校对与格式检查"
+  short_description: "校对文章文字与格式，并自动转换飞书嵌入式表格"
+  default_prompt: "Use $finalize-article-for-layout 校对这篇飞书定稿的文字与格式，自动修正机械问题，并把嵌入式表格转换为完整的飞书原生表格。"
