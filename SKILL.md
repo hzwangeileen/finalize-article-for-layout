@@ -1,13 +1,13 @@
 ---
 name: finalize-article-for-layout
-description: "Apply a fail-closed pre-layout quality gate to a final Chinese article. Use when an author wants to run a finished draft through proofreading before WeChat layout or Word export: fix safe typos, official-name casing, Chinese punctuation, AI-style em dashes, and excessive bold; inspect heading and list depth without restructuring; require embedded Feishu sheets to become complete native document tables; require Feishu 文字排版助手 normalization; collect special layout notes; and decide whether the article is ready to @ the typesetter."
+description: "Apply a fail-closed pre-layout quality gate to a final Chinese article. Use when an author wants to run a finished draft through proofreading before WeChat layout or Word export: fix safe typos, official-name casing, Chinese punctuation, Chinese-English spacing, AI-style em dashes, and excessive bold; inspect heading and list depth without restructuring; require embedded Feishu sheets to become complete native document tables; collect special layout notes; and decide whether the article is ready to @ the typesetter."
 ---
 
 # Finalize Article For Layout
 
 Run a release gate, not a general rewrite. Use this sequence:
 
-`AI proofreading → 作者处理结构问题 → 嵌入式表格转为飞书原生表格 → 飞书「文字排版助手」一键优化 → @排版负责人`
+`AI proofreading 与中英文空格规范 → 作者处理结构问题 → 嵌入式表格转为飞书原生表格 → @排版负责人`
 
 Do not report `可以交付排版` until every required check is either verified or explicitly resolved by the author.
 
@@ -15,7 +15,7 @@ Do not report `可以交付排版` until every required check is either verified
 
 - Accept a Feishu document, an open controllable Feishu page, or pasted article text.
 - Treat the current Feishu document as the authority for headings, lists, tables, images, and rich-text formatting.
-- When only pasted text is available, proofread the text but mark Feishu-only checks as `未验证`. Never infer that tables are native or that the formatting assistant ran.
+- When only pasted text is available, proofread and normalize the text but mark Feishu table checks as `未验证`. Never infer that tables are native.
 - Require a near-final draft. If the article needs substantive changes, stop after the audit and return the required author actions.
 
 ## 2. Separate issues by ownership
@@ -28,7 +28,9 @@ Do not report `可以交付排版` until every required check is either verified
 - Preserve half-width punctuation inside URLs, email addresses, code, formulas, file names, and other machine-readable strings.
 - Replace AI-favored em dashes (`——`) with a full stop or comma only when the meaning is unambiguous.
 - Add no bold. Remove bold from bullet points, isolated words, and short phrases. Retain bold only for a complete sentence that is clearly intended as emphasis.
-- Fix duplicate spaces and obvious spaces beside punctuation. Leave final Chinese–English and Chinese–number spacing to Feishu's built-in assistant.
+- In ordinary prose, insert exactly one half-width space at every direct boundary between a Chinese character and an English letter sequence, in either direction. For example, change `AI写作` to `AI 写作` and `使用OpenAI模型` to `使用 OpenAI 模型`.
+- Collapse multiple spaces at those Chinese-English boundaries to one. Do not leave a space immediately before Chinese punctuation.
+- Do not alter spacing inside URLs, email addresses, code, formulas, file names, or other machine-readable strings.
 
 Do not silently change an uncertain proper noun or ambiguous sentence. Preserve it and send it to `作者需处理`.
 
@@ -65,24 +67,11 @@ Inspect every tabular block in the source Feishu document.
 
 If the Feishu UI is not controllable, output this author action exactly:
 
-`请把嵌入式电子表格重建为飞书文档原生表格，逐行逐列核对完整，并确认导出的 Word 包含全部表格内容。`
+`请回到飞书原文检查所有表格；如有嵌入式电子表格，请重建为飞书文档原生表格，逐行逐列核对完整，并确认导出的 Word 包含全部表格内容。`
 
 Never claim a table passed when the original Feishu block and the resulting native table were not inspected.
 
-## 4. Require Feishu formatting normalization
-
-After the text and author-owned issues are resolved, run Feishu `文字排版助手` → `一键优化` to normalize:
-
-- spacing between Chinese and English or numbers;
-- full-width and half-width punctuation covered by the assistant.
-
-This is a Feishu UI capability, not a Lark OpenAPI operation. If the UI is controllable and the user authorized execution, run it and verify the visible completion result. Otherwise, output:
-
-`请在飞书中打开「文字排版助手」，点击「一键优化」，统一处理中英文空格和全、半角标点。`
-
-Never mark this check as passed without visible confirmation from Feishu or explicit confirmation from the author.
-
-## 5. Collect layout handoff notes
+## 4. Collect layout handoff notes
 
 List any non-default requirement the typesetter needs before starting, including:
 
@@ -93,30 +82,30 @@ List any non-default requirement the typesetter needs before starting, including
 
 Do not invent requirements. Write `无` when the author confirms there are none.
 
-## 6. Apply the fail-closed handoff gate
+## 5. Apply the fail-closed handoff gate
 
 Mark `可以 @排版` only when all of the following are true:
 
 - mechanical proofreading is complete;
 - no uncertain spelling, typo, or wording remains;
 - no author-owned structural issue remains;
+- every Chinese-English boundary in ordinary prose contains exactly one half-width space;
 - heading depth is at most three levels;
 - bullet and ordered lists are flat;
 - every table is either a verified native Feishu table or intentionally excluded;
-- Feishu `文字排版助手` completion is confirmed;
 - special layout requirements are recorded;
 - the draft is final enough that no structural or piecemeal typo edits are expected after layout begins.
 
 If any item is unresolved, use `暂不建议 @排版`. Do not soften a blocking issue into a generic reminder.
 
-## 7. Return the fixed output contract
+## 6. Return the fixed output contract
 
 Always return these sections:
 
 1. `终检状态` — `可以 @排版` or `暂不建议 @排版`.
-2. `已自动修正` — concise list with counts or `无`.
+2. `已自动修正` — concise list or `无`; include counts only when they can be determined reliably.
 3. `作者需处理` — each location, problem, rule, and action; write `无` only when empty.
-4. `飞书操作` — native-table conversion and formatting-assistant status.
+4. `飞书表格` — native-table conversion and Word-export status.
 5. `排版备注` — confirmed special requirements or `无`.
 6. `修正后全文` — include only when the input was pasted text or the user asks for a clean copy.
 
