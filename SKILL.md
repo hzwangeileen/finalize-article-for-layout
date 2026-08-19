@@ -1,13 +1,13 @@
 ---
 name: finalize-article-for-layout
-description: "Run the final pre-layout check for a Chinese article after writing and structural editing are complete. Use when the user asks for proofreading, typo cleanup, proper-noun and English capitalization checks, Chinese punctuation normalization, heading or list-depth checks, restrained bold formatting, removal of AI-style em dashes, Feishu/Lark 文字排版助手 handoff, or a final article ready to @ the typesetter for WeChat publication."
+description: "Run the final pre-layout check for a Chinese article after writing and structural editing are complete. Use when the user asks for proofreading, typo cleanup, proper-noun and English capitalization checks, Chinese punctuation normalization, heading or list-depth checks, restrained bold formatting, removal of AI-style em dashes, conversion of embedded Feishu spreadsheet blocks into native document tables before Word export, Feishu/Lark 文字排版助手 handoff, or a final article ready to @ the typesetter for WeChat publication."
 ---
 
 # Finalize Article For Layout
 
 Prepare a nearly final Chinese article for layout without rewriting it. Keep the workflow in this order:
 
-`AI proofreading → 飞书「文字排版助手」一键优化 → @排版负责人`
+`AI proofreading → 嵌入式表格转为飞书原生表格 → 飞书「文字排版助手」一键优化 → @排版负责人`
 
 ## Establish the boundary
 
@@ -57,12 +57,32 @@ Return the corrected full article first. Then return `待确认项`; write `无`
 
 7. 检查文章层级：全文标题体系最多使用三个层次；bullet point 和有序列表（编号条目）都只允许一层，不要嵌套。只有在不改变内容、顺序和从属关系时才可以直接扁平化；如果调整会影响文章逻辑，请保留原文并列为待确认项。
 
+8. 如果可以访问原飞书文档，请检查是否存在嵌入式电子表格。此类表格通常会显示 A、B、C 等列标和 1、2、3 等行号，直接导出 Word 可能只保留部分内容。发现后请标记为“需转为飞书原生表格”，不要把不完整的 Word 导出结果当作最终表格。如果当前只能看到粘贴后的纯文本，请在待确认项中提醒人工检查飞书原文。
+
 请先输出修正后的完整文章，再单独列出待确认项；如果没有待确认项，请写“无”。
 
 以下是需要 proofreading 的文章：
 
 【粘贴全文】
 ```
+
+## Convert embedded tables before Word export
+
+Inspect every tabular block in the source Feishu document before export.
+
+- Treat a spreadsheet or sheet card embedded in the document as unsafe for Word export. Common signs include column letters such as `A/B/C`, numbered row headers, a sheet-style grid, scrolling inside the block, or opening the block in a spreadsheet view. Do not classify the block only by its visual borders because an embedded sheet can look like a normal table when its spreadsheet chrome is hidden.
+- Confirm the replacement is a native Feishu document table by its native table block controls, such as the green table icon and block handle, and by direct document-cell editing rather than an embedded spreadsheet view.
+- Replace each unsafe embedded block with a native Feishu document table before exporting Word. Do not replace it with a screenshot when the cells need to remain complete and editable.
+- Preserve every visible row, column, cell value, header, unit, title, note, source, and reading order. Convert formulas to their displayed values when the native table cannot preserve formulas.
+- Check hidden or scrollable rows and columns so the native table contains the full data set, not only the currently visible viewport. A partially recreated table is still a failure even if the visible cells are correct.
+- Keep the original embedded block until the native table has been verified. Compare row count, column count, and cell contents, then remove or replace the embedded block.
+- Export a test Word file when possible and confirm the entire native table is present. Do not mark the handoff ready if the exported table is clipped or incomplete.
+
+This conversion requires access to the Feishu document UI and is not equivalent to editing the incomplete Word export. If a controllable Feishu UI is open and the user authorized end-to-end execution, use the applicable browser or computer-control workflow. Otherwise, give the user this exact next step:
+
+`请先把带列标和行号的飞书嵌入式表格重建为飞书文档原生表格，逐行逐列核对完整后，再导出 Word。`
+
+Never claim the table was converted or exported completely unless the source and resulting native table were checked.
 
 ## Run Feishu formatting normalization
 
@@ -79,7 +99,7 @@ Never claim this step ran unless the UI visibly confirmed it.
 
 ## Hand off for layout
 
-- Treat the text after Feishu optimization as the delivery version.
+- Treat the document after embedded-table conversion and Feishu optimization as the delivery version.
 - Ask the author to resolve every `待确认项` before handoff.
 - Do not make further piecemeal typo or structural edits after layout starts. If content changes materially, rerun the entire workflow.
 - Finish with: `终检完成后，请 @排版负责人开始排版。`
